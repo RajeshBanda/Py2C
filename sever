@@ -1,0 +1,49 @@
+import urllib2
+import csv
+import re
+import requests
+from bs4 import BeautifulSoup
+from collections import defaultdict
+
+class CVE_List:
+
+
+ string_count=[]
+
+ detail_string=[]
+#final_output={'2016':[],'2015':[],'2014':[]}
+ final_output=defaultdict(list)
+
+ def print_cve_id(self,m,n):
+   for i in range(m,n,20):      # Number of pages plus one 
+       url = "https://web.nvd.nist.gov/view/vuln/search-results?search_type=last3years&cves=on&startIndex={}".format(i)
+
+       page = urllib2.urlopen(url)
+       soup = BeautifulSoup(page)
+#print soup.prettify()  
+       all_links=soup.find_all("a")
+       for link in all_links:
+          self.string_count.append(link.get("href"))
+#print string_count
+       for i in filter(lambda x: re.search(r'details?', x), self.string_count):
+           self.detail_string.append(i[7:])
+   # print final_output
+       for n in self.detail_string:
+#   print n     
+           try:
+               xyz=(n[11:15])
+   #print xyz
+  # if xyz in final_output:
+               self.final_output[xyz].append(n)
+           except KeyError:
+            pass
+   else:
+     # for key, value in self.final_output.items():
+     #  print "%s\t\n%s" % (key, "\t".join(value)) 
+     #  print
+       print "processing"
+     # return self.final_output
+ def cve_id(self):
+   return self.detail_string
+
+
